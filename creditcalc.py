@@ -1,15 +1,15 @@
 import argparse
 from math import log, ceil, pow, floor, prod
 
-def overpayment_prod(loan_principal, monthly_payment, number_months):
+def overpayment_prod(loan_principal, monthly_payment, number_months=1):
     overpayment = monthly_payment * number_months - loan_principal
     print(f'Overpayment = {ceil(overpayment)}')
 
 def annuity_payment_prod(loan_principal, number_months, loan_interest):
     monthly_interest_rate = loan_interest / 1200
-    monthly_payment = loan_principal * monthly_interest_rate * pow((1 + monthly_interest_rate), number_months) / (pow((1 + monthly_interest_rate), number_months) - 1)
-    print(f'Your annuity payment = {ceil(monthly_payment)}!')
-    overpayment_prod(loan_principal, ceil(monthly_payment), number_months)
+    monthly_payment = ceil(loan_principal * monthly_interest_rate * pow((1 + monthly_interest_rate), number_months) / (pow((1 + monthly_interest_rate), number_months) - 1))
+    print(f'Your annuity payment = {monthly_payment}!')
+    overpayment_prod(loan_principal, monthly_payment, number_months)
 
 def loan_principal_prod(monthly_payment, number_months, loan_interest):
     monthly_interest_rate = loan_interest / 1200
@@ -20,8 +20,8 @@ def loan_principal_prod(monthly_payment, number_months, loan_interest):
 def time_to_repay(loan_principal, monthly_payment, loan_interest):
     month_str, year_str = 'month', 'year'
     monthly_interest_rate = loan_interest / 1200
-    number_months = log((monthly_payment / (monthly_payment - monthly_interest_rate * loan_principal)), (1 + monthly_interest_rate))
-    years, months = divmod(ceil(number_months), 12)
+    number_months = ceil(log((monthly_payment / (monthly_payment - monthly_interest_rate * loan_principal)), (1 + monthly_interest_rate)))
+    years, months = divmod(number_months, 12)
     if years and months:
         if months > 1:
             month_str += 's'
@@ -37,7 +37,7 @@ def time_to_repay(loan_principal, monthly_payment, loan_interest):
             year_str += 's'
         time = f'{years} {year_str}'
     print(f'It will take {time} to repay the loan!')
-    overpayment_prod(loan_principal, monthly_payment, ceil(number_months))
+    overpayment_prod(loan_principal, monthly_payment, number_months)
 
 def diff_payments_prod(loan_principal, number_months, loan_interest, month):
     monthly_interest_rate = loan_interest / 1200
@@ -75,7 +75,7 @@ elif args.type == 'diff':
         stock.append(diff_payment)
         print(f'Month {month}: payment is {diff_payment}')
     print()
-    print(f'Overpayment = {sum(stock) - args.principal}')
+    overpayment_prod(args.principal, sum(stock))
 elif args.type == 'annuity':
     if not args.principal:
         loan_principal_prod(args.payment, args.periods, args.interest)
